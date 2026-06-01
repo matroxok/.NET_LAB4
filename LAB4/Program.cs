@@ -1,4 +1,5 @@
 using LAB4.Components;
+using Microsoft.AspNetCore.Authentication.Certificate;
 
 namespace LAB4;
 
@@ -11,7 +12,10 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
-
+        
+        // certyfikat https inicjalizacja
+        builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -29,7 +33,11 @@ public class Program
 
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
-
+        
+        // wymuszenie użycia wczesniej dodanego certyfiaktu
+        app.UseAuthentication();
+        app.UseAuthorization();
+        
         app.Run();
     }
 }
