@@ -16,6 +16,11 @@
 }
 else
 {
+    <input
+        class="form-control"
+        placeholder="Filter by summary..."
+        value="@filterText"
+        @oninput="Input"/>
     <table class="table">
         <thead>
         <tr>
@@ -57,6 +62,7 @@ else
     private WeatherForecast[]? forecasts;
     private WeatherForecast[]? originalForecasts;
     private int coutOfWarmDays;
+    private string filterText = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,6 +114,24 @@ else
         forecasts = originalForecasts;
 
         // ponownie liczymy ciepłe dni
+        coutOfWarmDays = forecasts.Count(forecast => forecast.TemperatureC > 15);
+    }
+
+    private void Input(ChangeEventArgs arg)
+    {
+        filterText = arg.Value?.ToString() ?? "";
+
+        if (originalForecasts == null)
+        {
+            return;
+        }
+
+        forecasts = originalForecasts
+            .Where(forecast =>
+                forecast.Summary != null &&
+                forecast.Summary.Contains(filterText, StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
         coutOfWarmDays = forecasts.Count(forecast => forecast.TemperatureC > 15);
     }
 
