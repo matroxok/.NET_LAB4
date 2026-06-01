@@ -1,5 +1,6 @@
 using LAB4.Components;
 using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.Extensions.ML;
 
 namespace LAB4;
 
@@ -15,6 +16,13 @@ public class Program
         
         // certyfikat https inicjalizacja
         builder.Services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
+
+        // MODEL AI
+        builder.Services.AddPredictionEnginePool<SentimentData, SentimentPrediction>()
+            .FromFile(
+                "SentimentModel",
+                "ML/sentiment-model.zip",
+                true);
         
         var app = builder.Build();
 
@@ -37,6 +45,9 @@ public class Program
         // wymuszenie użycia wczesniej dodanego certyfiaktu
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // AI train - tylko raz przy 1 starcie
+        // SentimentModelTrainer.Train();
         
         app.Run();
     }

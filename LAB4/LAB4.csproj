@@ -8,6 +8,10 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.ML" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.ML" Version="5.0.0"/>
+        <PackageReference Include="Microsoft.ML.FastTree" Version="5.0.0"/>
+        <PackageReference Include="ModelBuilder" Version="8.0.0"/>
     </ItemGroup>
 
 </Project>

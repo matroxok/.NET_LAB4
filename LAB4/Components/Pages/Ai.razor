@@ -1,0 +1,77 @@
+@page "/ai"
+@using Microsoft.Extensions.ML
+@rendermode InteractiveServer
+
+@inject PredictionEnginePool<SentimentData, SentimentPrediction> PredictionPool
+
+<PageTitle>AI</PageTitle>
+
+<h1>Analiza nastroju AI</h1>
+
+<p>Wpisz tekst, a model spróbuje określić jego nastrój.</p>
+
+<div class="mb-3">
+    <label class="form-label">Twój tekst:</label>
+
+    <textarea class="form-control"
+              rows="4"
+              placeholder="Np. I am very happy today"
+              @bind="userInput">
+    </textarea>
+</div>
+
+<button class="btn btn-primary" @onclick="AnalyzeSentiment">
+    Analizuj nastrój
+</button>
+
+@if (prediction != null)
+{
+    <div class="mt-4 alert @GetAlertClass()">
+        <h4>
+            Twój nastrój to: @prediction.PredictedSentiment
+        </h4>
+
+        <p>
+            Wynik modelu: @prediction.PredictedSentiment
+        </p>
+    </div>
+}
+
+@code {
+    private string userInput = "";
+    private SentimentPrediction? prediction;
+
+    private void AnalyzeSentiment()
+    {
+        if (string.IsNullOrWhiteSpace(userInput))
+        {
+            return;
+        }
+
+        var input = new SentimentData
+        {
+            Text = userInput
+        };
+
+        prediction = PredictionPool.Predict(
+            "SentimentModel",
+            input);
+    }
+
+    private string GetAlertClass()
+    {
+        if (prediction == null)
+        {
+            return "alert-secondary";
+        }
+
+        return prediction.PredictedSentiment switch
+        {
+            "positive" => "alert-success",
+            "negative" => "alert-danger",
+            "neutral" => "alert-warning",
+            _ => "alert-info"
+        };
+    }
+
+}
